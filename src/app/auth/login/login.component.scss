@@ -1,0 +1,229 @@
+
+// Add these classes to your login page ion-content
+.login-page {
+  --background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  
+  ion-card {
+    margin: 100px 20px 20px 20px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      animation: shimmer 3s infinite;
+    }
+  }
+  
+  ion-card-header {
+    padding: 30px 20px 20px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+    }
+    
+    ion-card-title {
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 1px;
+      animation: slideInFromLeft 0.6s ease-out 0.2s both;
+    }
+  }
+  
+  ion-card-content {
+    padding: 30px 20px;
+    
+    ion-item {
+      --background: transparent;
+      --border-color: rgba(79, 172, 254, 0.3);
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      animation: fadeInUp 0.6s ease-out both;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &:nth-child(1) { animation-delay: 0.3s; }
+      &:nth-child(2) { animation-delay: 0.4s; }
+      
+      &:hover {
+        --border-color: #4facfe;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 172, 254, 0.2);
+      }
+      
+      &.item-has-focus {
+        --border-color: #4facfe;
+        --highlight-background: #4facfe;
+        transform: scale(1.02);
+        box-shadow: 0 4px 16px rgba(79, 172, 254, 0.3);
+      }
+      
+      ion-input {
+        --placeholder-color: rgba(0, 0, 0, 0.4);
+        --placeholder-opacity: 1;
+        font-size: 16px;
+        padding: 12px 16px;
+        
+        &::part(native) {
+          transition: all 0.3s ease;
+        }
+      }
+      
+      ion-label {
+        font-weight: 500;
+        color: #4facfe;
+        transition: all 0.3s ease;
+        
+        &.label-floating.sc-ion-label-md-h {
+          transform: translateY(0) scale(1);
+        }
+      }
+    }
+    
+    ion-button {
+      margin-top: 20px;
+      height: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      animation: fadeInUp 0.6s ease-out 0.5s both;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      --background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --background-hover: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      --box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+      
+      &:hover {
+        transform: translateY(-3px);
+        --box-shadow: 0 8px 25px rgba(79, 172, 254, 0.5);
+        
+        &::before {
+          width: 300px;
+          height: 300px;
+        }
+      }
+      
+      &:active {
+        transform: translateY(-1px);
+        animation: pulse 0.3s ease-in-out;
+      }
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE DESIGN
+// ============================================
+
+@media (min-width: 768px) {
+  ion-content {
+    ion-card {
+      max-width: 500px;
+      margin: 100px auto;
+    }
+  }
+  
+  .login-page {
+    ion-card {
+      max-width: 500px;
+      margin: 120px auto;
+    }
+  }
+}
+
+// ============================================
+// ADDITIONAL ENHANCEMENTS
+// ============================================
+
+// Loading state for buttons
+ion-button {
+  &.button-loading {
+    pointer-events: none;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+@keyframes spin {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+// Error shake animation
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+// Success pulse
+@keyframes successPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(102, 234, 147, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(102, 234, 147, 0);
+  }
+}
+
+.success-pulse {
+  animation: successPulse 1s ease-in-out;
+}

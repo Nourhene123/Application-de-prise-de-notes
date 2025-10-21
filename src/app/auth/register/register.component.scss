@@ -1,0 +1,117 @@
+.register-page {
+  --background: #f5f7fa; // Fond clair, ajustez pour thème sombre avec var(--ion-background-color)
+  
+  ion-card {
+    margin: 50px auto;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: var(--ion-card-background, #ffffff);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  ion-card-header {
+    padding: 20px;
+    background: #007bff; // Bleu doux, ajustable
+    border-radius: 12px 12px 0 0;
+    
+    ion-card-title {
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+    }
+  }
+  
+  ion-card-content {
+    padding: 20px;
+    
+    ion-item {
+      --background: transparent;
+      --border-color: #e0e5eb;
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      transition: border-color 0.2s ease;
+      
+      &:hover {
+        --border-color: #007bff;
+      }
+      
+      &.item-has-focus {
+        --border-color: #007bff;
+      }
+      
+      ion-input {
+        --placeholder-color: #6c757d;
+        font-size: 16px;
+        padding: 10px;
+      }
+      
+      ion-label {
+        font-weight: 500;
+        color: #495057;
+      }
+    }
+    
+    ion-button {
+      margin-top: 15px;
+      height: 45px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      --background: #007bff;
+      --background-hover: #0056b3;
+      --color: white;
+      width: 100%;
+      transition: background 0.2s ease, transform 0.2s ease;
+      
+      &:hover {
+        --background: #0056b3;
+        transform: translateY(-1px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 576px) {
+  .register-page ion-card {
+    margin: 20px;
+    max-width: 100%;
+  }
+}
+
+// Thème sombre
+@media (prefers-color-scheme: dark) {
+  .register-page {
+    --background: #1e1e1e;
+    
+    ion-card {
+      background: #2c2c2c;
+    }
+    
+    ion-card-header {
+      background: #0069d9;
+    }
+    
+    ion-item {
+      --border-color: #444;
+      --placeholder-color: #adb5bd;
+      
+      ion-label {
+        color: #ced4da;
+      }
+    }
+  }
+}
