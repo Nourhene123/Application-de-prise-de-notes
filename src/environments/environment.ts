@@ -1,16 +1,15 @@
 export const environment = {
   production: false,
-  firebase: {
-    apiKey:  "AIzaSyDXsXXu22gL9crLwXI5YOyeLBBQTbQlIPk",
-    authDomain: "bloc-notes-e3994.firebaseapp.com",
-    projectId: "bloc-notes-e3994",
-    storageBucket:"bloc-notes-e3994.appspot.com",
-    messagingSenderId: "951582142207",
-    appId: "1:951582142207:web:ed6bd70d38cd4fc5c1a6ca",
-    measurementId: "G-HC3LDJBECX"
+  firebase : {
+  apiKey: "AIzaSyD4hL6S0nMOGlbe3g1AQ3rZ1ulCP7fWeVc",
+  authDomain: "notesapp-ef12a.firebaseapp.com",
+  projectId: "notesapp-ef12a",
+  storageBucket: "notesapp-ef12a.firebasestorage.app",
+  messagingSenderId: "514108468313",
+  appId: "1:514108468313:web:e2a887fb9d937c5cdf9548",
+  measurementId: "G-7S3T4QTYJ8"
   }
-  };  
+  };
 
 
- 
- 
+

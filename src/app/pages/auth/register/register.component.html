@@ -1,0 +1,35 @@
+<ion-content class="auth-page">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Inscription</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Nom</ion-label>
+        <ion-input type="text" [(ngModel)]="firstName"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Prénom</ion-label>
+        <ion-input type="text" [(ngModel)]="lastName"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" [(ngModel)]="email"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Mot de passe</ion-label>
+        <ion-input type="password" [(ngModel)]="password"></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" (click)="signUp()" [disabled]="!isFormValid()">
+        S'inscrire
+      </ion-button>
+
+      <ion-button fill="clear" color="medium" expand="block" routerLink="/login">
+        J'ai déjà un compte
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

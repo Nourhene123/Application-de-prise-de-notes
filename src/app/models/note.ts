@@ -1,9 +1,10 @@
 export interface Note {
-  id: string;
+  uid: string;
   title: string;
-  content: string; 
+  content: string;
   tags: string[];
   createdAt: Date;
+  color: string;
   updatedAt: Date;
   userId: string;
 }

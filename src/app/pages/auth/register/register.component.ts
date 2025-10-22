@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth/auth.service';
+import { AuthService } from 'src/app/services/auth-service';
 
 @Component({
   selector: 'app-register',
@@ -11,13 +11,15 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 export class RegisterComponent {
   email: string = '';
   password: string = '';
-  displayName: string = '';
+  firstName: string = '';
+  lastName: string = '';
+  authService = inject(AuthService);
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router) {}
 
   async signUp() {
     try {
-      await this.authService.signUp(this.email, this.password, this.displayName);
+      await this.authService.signUp(this.email, this.password, this.firstName, this.lastName);
       console.log('Inscription réussie !');
       this.router.navigate(['/login']); // Redirige vers la page de connexion après inscription
     } catch (error) {
@@ -31,6 +33,6 @@ export class RegisterComponent {
   }
 
   isFormValid(): boolean {
-    return this.email.trim() !== '' && this.password.trim() !== '' && this.displayName.trim() !== '';
+    return this.email.trim() !== '' && this.password.trim() !== '' && this.firstName.trim() !== '' && this.lastName.trim() !== '';
   }
 }

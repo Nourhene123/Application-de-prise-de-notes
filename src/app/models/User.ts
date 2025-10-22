@@ -1,6 +1,8 @@
 export interface User {
   uid: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  displayName?: string; 
+  password: string;
   role: 'user' | 'admin';
 }

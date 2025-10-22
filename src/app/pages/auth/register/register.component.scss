@@ -1,0 +1,107 @@
+.auth-page {
+  --background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ion-card {
+    width: 90%;
+    max-width: 420px;
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    margin: 80px auto;
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  ion-card-header {
+    text-align: center;
+    padding: 25px;
+    background: transparent;
+
+    ion-card-title {
+      color: #4facfe;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+  }
+
+  ion-card-content {
+    padding: 25px;
+
+    ion-item {
+      --background: transparent;
+      --border-color: rgba(79, 172, 254, 0.3);
+      margin-bottom: 18px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(6px);
+
+      &:hover,
+      &.item-has-focus {
+        --border-color: #4facfe;
+        box-shadow: 0 4px 12px rgba(79, 172, 254, 0.15);
+      }
+
+      ion-label {
+        color: #4facfe;
+        font-weight: 500;
+      }
+
+      ion-input {
+        font-size: 15px;
+        padding: 10px 5px;
+        color: #000;
+        --placeholder-color: rgba(0, 0, 0, 0.4);
+      }
+    }
+
+    ion-button {
+      margin-top: 10px;
+      height: 48px;
+      font-weight: 600;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      --background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --background-hover: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+      --box-shadow: 0 6px 15px rgba(79, 172, 254, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        --box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    ion-button[fill='clear'] {
+      margin-top: 5px;
+      font-size: 14px;
+      text-transform: none;
+      font-weight: 500;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (min-width: 768px) {
+    ion-card {
+      max-width: 400px;
+    }
+  }
+}
