@@ -8,7 +8,12 @@ const routes: Routes = [
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule),
     canActivate: [AuthGuard]
   },
-   {
+  {
+    path: 'add-note',
+    loadChildren: () => import('./pages/add-note/add-note.module').then( m => m.AddNotePageModule),
+    canActivate: [AuthGuard]
+  },
+  {
     path: '',
     loadChildren: () => import('./pages/auth/auth-module').then( m => m.AuthModule)
   },
@@ -16,11 +21,6 @@ const routes: Routes = [
     path: '**',
     redirectTo: '',
     pathMatch: 'full'
-  },
-  {
-    path: 'add-note',
-    loadChildren: () => import('./pages/add-note/add-note.module').then( m => m.AddNotePageModule),
-    canActivate: [AuthGuard]
   }
 
 ];

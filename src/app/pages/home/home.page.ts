@@ -4,6 +4,8 @@ import { Observable, Subscription } from 'rxjs';
 import { Note } from 'src/app/models/note';
 import { AuthService } from 'src/app/services/auth-service';
 import { NotesService } from 'src/app/services/notes-service';
+import { Router } from '@angular/router';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-home',
@@ -13,30 +15,39 @@ import { NotesService } from 'src/app/services/notes-service';
 })
 export class HomePage implements OnInit {
 
-  notes$: Observable<Note[]>;
+
+  //notes$: Observable<Note[]>;
   currentUser: User | null = null;
 
-  notes = [
-    { title: 'Shopping List', content: 'Milk, Bread, Eggs, Coffee', createdAt: new Date(), color: '#FFECB3' },
-    { title: 'Workout Plan', content: 'Leg day at 6 PM', createdAt: new Date(), color: '#C8E6C9' },
-    { title: 'Meeting Notes', content: 'Discuss project roadmap with team', createdAt: new Date(), color: '#BBDEFB' },
-    { title: 'Ideas', content: 'Start a new blog about coding tips', createdAt: new Date(), color: '#F8BBD0' },
-    { title: 'Reminder', content: 'Pay electricity bill before Friday', createdAt: new Date(), color: '#FFE0B2' },
-  ];
+  newNote: Partial<Note> = {
+    title: '',
+    content: '',
+    tags: [],
+  };
+
+  tagsInput: string = '';
 
 
-  constructor(private notesService: NotesService , private authService:AuthService) {
-    this.notes$ = this.notesService.getNotes();
-  }
+  notes: Note[] = [];
+
+
+  constructor(private notesService: NotesService , private authService:AuthService, private router:Router) {
+
+    }
 
   async ngOnInit() {
     this.currentUser = await this.authService.getCurrentUser();
     console.log('Current user:', this.currentUser);
+
+    this.notesService.getNotesByUserId(this.currentUser!.uid).subscribe(notes => {
+      console.log("user id ", this.currentUser?.uid);
+      this.notes = notes;
+    });
   }
 
 
-  getNotes() {
-    this.notesService.getNotesByUserId(this.currentUser?.uid).subscribe(notes => {
+  getNotesByUserId() {
+    this.notesService.getNotesByUserId(this.currentUser!.uid).subscribe(notes => {
       console.log(notes);
     });
   }
@@ -45,8 +56,59 @@ export class HomePage implements OnInit {
     this.notesService.updateNote(noteId, { title: 'Updated Title' });
   }
 
-  deleteNote(noteId: string) {
-    this.notesService.deleteNote(noteId);
+
+  openAddNote() {
+    this.router.navigate(['add-note']);
   }
 
+
+  async createNote() {
+  if (!this.currentUser) {
+    console.error('Utilisateur non connecté');
+    return;
+  }
+
+  const note: Note = {
+    uid: '', // Firestore will generate this automatically
+    title: this.newNote.title || '',
+    content: this.newNote.content || '',
+    tags: this.tagsInput ? this.tagsInput.split(',').map(tag => tag.trim()) : [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    color:this.newNote.color ,
+    userId: this.currentUser.uid,
+  };
+
+  try {
+    await this.notesService.addNote(note);
+    this.getNotesByUserId();
+    console.log('Note ajoutée avec succès !');
+    // Reset form
+    this.newNote = { title: '', content: '', tags: [] };
+    this.tagsInput = '';
+  } catch (error) {
+    console.error('Erreur lors de la création de la note :', error);
+  }
+}
+
+  selectedNoteId: string | null = null;
+  onNoteClick(note: Note) {
+    if (this.selectedNoteId === note.uid) {
+      // Second click: delete the note
+      this.selectedNoteId = null;
+    } else {
+      // First click: select note
+      this.selectedNoteId = note.uid;
+    }
+  }
+
+  deleteNote(note: Note) {
+    this.notesService.deleteNote(note.uid).then(() => {
+      this.notes = this.notes.filter(n => n.uid !== note.uid);
+    });
+  }
+
+  isSelected(note: Note): boolean {
+    return this.selectedNoteId === note.uid;
+  }
 }

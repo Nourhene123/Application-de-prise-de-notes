@@ -13,6 +13,7 @@ import {
   Timestamp
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Note } from 'src/app/models/note';
 
 @Injectable({
@@ -24,8 +25,7 @@ export class NotesService {
 
   constructor(private firestore: Firestore) {}
 
-
-  async addNote(note:Note): Promise<void> {
+  async addNote(note: Note): Promise<void> {
     const createdAt = Timestamp.now();
     const updatedAt = Timestamp.now();
 
@@ -41,21 +41,49 @@ export class NotesService {
       ? query(this.notesCollection, where('userId', '==', userId))
       : this.notesCollection;
 
-    return collectionData(q, { idField: 'uid' }) as Observable<Note[]>;
+    return collectionData(q, { idField: 'uid' }).pipe(
+      map((notes: any[]) =>
+        notes.map(note => ({
+          ...note,
+          createdAt: note.createdAt instanceof Timestamp
+            ? note.createdAt.toDate()
+            : note.createdAt,
+          updatedAt: note.updatedAt instanceof Timestamp
+            ? note.updatedAt.toDate()
+            : note.updatedAt,
+        }))
+      )
+    );
   }
 
-  // ✅ Get a single note by ID
   getNoteById(id: string): Observable<Note | undefined> {
     const noteDocRef = doc(this.firestore, `notes/${id}`);
-    return docData(noteDocRef, { idField: 'uid' }) as Observable<Note | undefined>;
+    return docData(noteDocRef, { idField: 'uid' }).pipe(
+      map((note: any) => note ? {
+        ...note,
+        createdAt: note.createdAt instanceof Timestamp
+          ? note.createdAt.toDate()
+          : note.createdAt,
+        updatedAt: note.updatedAt instanceof Timestamp
+          ? note.updatedAt.toDate()
+          : note.updatedAt,
+      } : undefined)
+    );
   }
 
-  getNotesByUserId(userId: string | undefined): Observable<Note[]> {
+  getNotesByUserId(userId: string): Observable<Note[]> {
     const q = query(this.notesCollection, where('userId', '==', userId));
-    return collectionData(q, { idField: 'uid' }) as Observable<Note[]>;
+    return collectionData(q, { idField: 'uid' }).pipe(
+      map((notes: any[]) =>
+        notes.map(note => ({
+          ...note,
+          createdAt: note.createdAt?.toDate ? note.createdAt.toDate() : note.createdAt,
+          updatedAt: note.updatedAt?.toDate ? note.updatedAt.toDate() : note.updatedAt,
+        }))
+      )
+    );
   }
 
-  // ✅ Update a note
   async updateNote(id: string, data: Partial<Note>): Promise<void> {
     const noteDocRef = doc(this.firestore, `notes/${id}`);
     await updateDoc(noteDocRef, {
@@ -64,7 +92,6 @@ export class NotesService {
     });
   }
 
-  // ✅ Delete a note
   async deleteNote(id: string): Promise<void> {
     const noteDocRef = doc(this.firestore, `notes/${id}`);
     await deleteDoc(noteDocRef);

@@ -19,30 +19,102 @@
 
 
   <div class="note-card">
-    @if( notes.length === 0 ){
-      <img src="../../../assets/no-content.png" alt="No notes" />
-      <strong>Aucune note disponible. Cliquez sur le bouton "+" pour en ajouter une.</strong>
-    }@else{
+  @if (notes.length === 0) {
+    <img src="../../../assets/no-content.png" alt="No notes" />
+    <strong>Aucune note disponible. Cliquez sur le bouton "+" pour en ajouter une.</strong>
+  } @else {
     @for (note of notes; track $index) {
+      <ion-card
+        (click)="onNoteClick(note)"
+        [class.selected]="isSelected(note)"
+        class="note"
+        [style.background]="isSelected(note) ? 'red' : note.color"
+      >
+        <ion-card-header>
+          <ion-card-title>{{ note.title }}</ion-card-title>
+          <ion-card-subtitle>{{ note.createdAt | date:'medium' }}</ion-card-subtitle>
+        </ion-card-header>
 
-    <ion-card [style.background]="note.color" class="note">
-      <ion-card-header>
-        <ion-card-title>{{ note.title }}</ion-card-title>
-        <ion-card-subtitle>{{ note.createdAt | date:'medium' }}</ion-card-subtitle>
-      </ion-card-header>
-
-      <ion-card-content>
-        {{ note.content }}
-      </ion-card-content>
-    </ion-card>
+        <ion-card-content>
+          {{ note.content }}
+          <!-- Trash icon appears only when note is selected -->
+          <ion-icon
+            *ngIf="isSelected(note)"
+            name="trash-outline"
+            class="delete-icon"
+            (click)="deleteNote(note); $event.stopPropagation()"
+          ></ion-icon>
+        </ion-card-content>
+      </ion-card>
+    }
   }
-}
-  </div>
+</div>
+
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button>
+    <ion-fab-button id="open-modal" expand="block">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
+  <ion-modal #modal trigger="open-modal">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title class="add-title">Add Note</ion-title>
+          <ion-buttons slot="end">
+            <ion-button color="light" (click)="modal.dismiss()">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title class="add-card-title">Ajouter une nouvelle note</ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+            <form #noteForm="ngForm" (ngSubmit)="createNote()">
+
+              <ion-item>
+                <ion-label position="floating">Titre</ion-label>
+                <ion-input type="text" name="title" [(ngModel)]="newNote.title"required></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Contenu</ion-label>
+                <ion-textarea name="content" [(ngModel)]="newNote.content" required>
+                </ion-textarea>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Tags (séparés par des virgules)</ion-label>
+                <ion-input
+                  type="text"
+                  name="tags"
+                  [(ngModel)]="tagsInput">
+                </ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="floating">Couleur</ion-label>
+                <br>
+                <ion-input type="color" name="color" [(ngModel)]="newNote.color" required></ion-input>
+              </ion-item>
+
+              <ion-button
+                expand="block"
+                type="submit"
+                [disabled]="noteForm.invalid || !currentUser">
+                Créer la note
+              </ion-button>
+
+            </form>
+          </ion-card-content>
+        </ion-card>
+
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
