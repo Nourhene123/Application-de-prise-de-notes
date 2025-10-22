@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guard/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   {
@@ -8,21 +9,30 @@ const routes: Routes = [
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule),
     canActivate: [AuthGuard]
   },
-   {
-    path: '',
-    loadChildren: () => import('./pages/auth/auth-module').then( m => m.AuthModule)
-  },
   {
-    path: '**',
-    redirectTo: '',
-    pathMatch: 'full'
+    path: 'login',
+    loadChildren: () => import('./pages/auth/auth-module').then( m => m.AuthModule)
   },
   {
     path: 'add-note',
     loadChildren: () => import('./pages/add-note/add-note.module').then( m => m.AddNotePageModule),
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/admin.page').then( m => m.AdminPage),
+    canActivate: [AdminGuard]
+  },
+  {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: '/login',
+    pathMatch: 'full'
   }
-
 ];
 
 @NgModule({

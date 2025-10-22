@@ -33,6 +33,9 @@ export class AuthService {
           map(u => u ?? {
             uid: firebaseUser.uid,
             email: firebaseUser.email ?? '',
+            firstName: '',
+            lastName: '',
+            password: '',
             role: 'user',
            } as User),
           catchError(err => {
@@ -126,20 +129,39 @@ export class AuthService {
   }
 
   async getCurrentUser(): Promise<User | null> {
-  const firebaseUser = await this.afAuth.currentUser;
-  if (!firebaseUser) return null;
+    try {
+      const firebaseUser = await this.afAuth.currentUser;
+      console.log('AuthService: Firebase user:', firebaseUser);
+      
+      if (!firebaseUser) {
+        console.log('AuthService: No Firebase user found');
+        return null;
+      }
 
-  // Get the user's document from Firestore
-  const userDocRef = doc(this.firestore, `users/${firebaseUser.uid}`);
-  const userData = await firstValueFrom(docData(userDocRef, { idField: 'uid' })) as User | undefined;
+      // Get the user's document from Firestore
+      const userDocRef = doc(this.firestore, `users/${firebaseUser.uid}`);
+      console.log('AuthService: Looking for user document:', firebaseUser.uid);
+      
+      const userData = await firstValueFrom(docData(userDocRef, { idField: 'uid' })) as User | undefined;
+      console.log('AuthService: User data from Firestore:', userData);
 
-  // Return Firestore data if exists, otherwise build a fallback object
-  return userData ?? {
-    uid: firebaseUser.uid,
-    email: firebaseUser.email ?? '',
-    firstName: '',        // placeholder if missing
-    lastName: '',
-    role: 'user',
-  } as User;
-}
+      if (userData) {
+        console.log('AuthService: Returning user data from Firestore');
+        return userData;
+      } else {
+        console.log('AuthService: No user data in Firestore, creating fallback');
+        return {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          firstName: '',
+          lastName: '',
+          password: '',
+          role: 'user',
+        } as User;
+      }
+    } catch (error) {
+      console.error('AuthService: Error getting current user:', error);
+      return null;
+    }
+  }
 }

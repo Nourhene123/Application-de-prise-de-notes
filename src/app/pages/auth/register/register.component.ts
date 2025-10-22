@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth-service';
+import { NavigationService } from 'src/app/services/navigation.service';
 
 @Component({
   selector: 'app-register',
@@ -14,6 +15,7 @@ export class RegisterComponent {
   firstName: string = '';
   lastName: string = '';
   authService = inject(AuthService);
+  navigationService = inject(NavigationService);
 
   constructor(private router: Router) {}
 
@@ -21,7 +23,8 @@ export class RegisterComponent {
     try {
       await this.authService.signUp(this.email, this.password, this.firstName, this.lastName);
       console.log('Inscription réussie !');
-      this.router.navigate(['/login']); // Redirige vers la page de connexion après inscription
+      console.log("Registration successful, redirecting based on role...");
+      await this.navigationService.redirectAfterLogin();
     } catch (error) {
       console.error('Échec de l\'inscription:', error);
       // Vous pouvez ajouter une alerte ou un message pour l'utilisateur ici

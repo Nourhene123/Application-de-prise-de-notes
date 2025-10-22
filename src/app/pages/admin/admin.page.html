@@ -1,0 +1,212 @@
+<ion-header class="admin-header">
+  <ion-toolbar>
+    <ion-title class="admin-title">
+      <ion-icon name="shield-checkmark-outline" class="title-icon"></ion-icon>
+      Administration
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="signOut()" class="logout-btn" fill="clear">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span class="btn-text">Déconnexion</span>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="admin-content">
+  <!-- Error Message -->
+  <ion-toast *ngIf="error" [isOpen]="!!error" [message]="error" [duration]="3000" (didDismiss)="error = null"></ion-toast>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="loading">
+    <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+    <p class="loading-text">Chargement...</p>
+  </div>
+
+  <!-- Access Denied Message -->
+  <div class="access-denied-container" *ngIf="currentUser?.role !== 'admin'">
+    <ion-card class="access-denied-card">
+      <ion-card-content class="access-denied-content">
+        <div class="access-denied-icon">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <h2 class="access-denied-title">Accès non autorisé</h2>
+        <p class="access-denied-message">Seuls les administrateurs peuvent accéder à cette page.</p>
+        <ion-button (click)="signOut()" fill="outline" class="access-denied-btn">
+          Retour à la connexion
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Admin Content -->
+  <div class="admin-main-content" *ngIf="currentUser?.role === 'admin'">
+    <!-- Tab Navigation -->
+    <div class="tab-navigation-container">
+      <ion-segment [(ngModel)]="selectedTab" (ionChange)="setTab($event.detail.value)" class="admin-segment">
+        <ion-segment-button value="users" class="segment-btn">
+          <ion-icon name="people-outline" class="segment-icon"></ion-icon>
+          <ion-label class="segment-label">Utilisateurs</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="notes" class="segment-btn">
+          <ion-icon name="document-text-outline" class="segment-icon"></ion-icon>
+          <ion-label class="segment-label">Notes</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="tab-content" *ngIf="selectedTab === 'users'">
+      <!-- Add New User Form -->
+      <ion-card class="form-card">
+        <ion-card-header class="form-header">
+          <div class="form-header-content">
+            <ion-icon name="person-add-outline" class="form-icon"></ion-icon>
+            <ion-card-title class="form-title">Ajouter un utilisateur</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content class="form-content">
+          <div class="form-grid">
+            <ion-item class="form-item">
+              <ion-label position="floating" class="form-label">Prénom</ion-label>
+              <ion-input [(ngModel)]="newUser.firstName" type="text"  class="form-input"></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-label position="floating" class="form-label">Nom</ion-label>
+              <ion-input [(ngModel)]="newUser.lastName" type="text"  class="form-input"></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-label position="floating" class="form-label">Email</ion-label>
+              <ion-input [(ngModel)]="newUser.email" type="email"  class="form-input"></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-label position="floating" class="form-label">Mot de passe</ion-label>
+              <ion-input [(ngModel)]="newUser.password" type="password"  class="form-input"></ion-input>
+            </ion-item>
+            <ion-item class="form-item">
+              <ion-label position="floating" class="form-label">Rôle</ion-label>
+              <ion-select [(ngModel)]="newUser.role" class="form-select">
+                <ion-select-option value="user">Utilisateur</ion-select-option>
+                <ion-select-option value="admin">Administrateur</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+          <ion-button (click)="createUser()" expand="block" class="create-btn">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Créer l'utilisateur
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Users List -->
+      <div class="users-grid">
+        <ion-card *ngFor="let user of users$ | async" class="user-card">
+          <ion-card-content class="user-card-content">
+            <div *ngIf="editingUser?.uid !== user.uid; else editUserTemplate" class="user-display">
+              <div class="user-avatar">
+                <ion-icon name="person-circle-outline"></ion-icon>
+              </div>
+              <div class="user-info">
+                <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
+                <p class="user-email">{{ user.email }}</p>
+                <div class="user-role-badge" [class.admin-role]="user.role === 'admin'">
+                  <ion-icon [name]="user.role === 'admin' ? 'shield-checkmark' : 'person'"></ion-icon>
+                  {{ user.role === 'admin' ? 'Administrateur' : 'Utilisateur' }}
+                </div>
+                <p class="user-uid">ID: {{ user.uid }}</p>
+              </div>
+              <div class="user-actions">
+                <ion-button (click)="startEditUser(user)" fill="outline" size="small" class="action-btn edit-btn">
+                  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+                <ion-button (click)="deleteUser(user.uid)" fill="outline" color="danger" size="small" class="action-btn delete-btn">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+            
+            <ng-template #editUserTemplate>
+              <div class="user-edit-form">
+                <h4 class="edit-title">Modifier l'utilisateur</h4>
+                <ion-item class="edit-item">
+                  <ion-label position="floating">Prénom</ion-label>
+                  <ion-input [(ngModel)]="editingUser!.firstName" class="edit-input"></ion-input>
+                </ion-item>
+                <ion-item class="edit-item">
+                  <ion-label position="floating">Nom</ion-label>
+                  <ion-input [(ngModel)]="editingUser!.lastName" class="edit-input"></ion-input>
+                </ion-item>
+                <ion-item class="edit-item">
+                  <ion-label position="floating">Rôle</ion-label>
+                  <ion-select [(ngModel)]="editingUser!.role" class="edit-select">
+                    <ion-select-option value="user">Utilisateur</ion-select-option>
+                    <ion-select-option value="admin">Administrateur</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <div class="edit-actions">
+                  <ion-button (click)="updateUser(editingUser!)" fill="solid" color="success" size="small" class="save-btn">
+                    <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+                    Sauvegarder
+                  </ion-button>
+                  <ion-button (click)="cancelEditUser()" fill="outline" color="medium" size="small" class="cancel-btn">
+                    <ion-icon name="close-outline" slot="start"></ion-icon>
+                    Annuler
+                  </ion-button>
+                </div>
+              </div>
+            </ng-template>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+
+    <!-- Notes Tab -->
+    <div class="tab-content" *ngIf="selectedTab === 'notes'">
+      <div class="notes-grid">
+        <ion-card *ngFor="let note of notes$ | async" class="note-card">
+          <ion-card-header class="note-header">
+            <div class="note-title-section">
+              <ion-card-title class="note-title">{{ note.title }}</ion-card-title>
+              <div class="note-color-indicator" [style.background-color]="note.color"></div>
+            </div>
+            <ion-card-subtitle class="note-dates">
+              <div class="date-item">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>Créée: {{ note.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="date-item">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>Modifiée: {{ note.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content class="note-content">
+            <div class="note-owner">
+              <ion-icon name="person-outline"></ion-icon>
+              <span>{{ getUserDisplayName(note.userId) }}</span>
+            </div>
+            <div class="note-text">
+              <p class="content-label">Contenu:</p>
+              <div class="note-content-text" [innerHTML]="note.content"></div>
+            </div>
+            <div *ngIf="note.tags && note.tags.length > 0" class="note-tags">
+              <p class="tags-label">Tags:</p>
+              <div class="tags-container">
+                <ion-chip *ngFor="let tag of note.tags" class="note-chip">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                  <ion-label>{{ tag }}</ion-label>
+                </ion-chip>
+              </div>
+            </div>
+            <div class="note-actions">
+              <ion-button (click)="deleteNote(note.uid)" fill="outline" color="danger" size="small" class="note-delete-btn">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Supprimer
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+</ion-content>
