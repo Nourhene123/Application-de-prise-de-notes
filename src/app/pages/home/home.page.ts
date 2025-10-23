@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/models/User';
-import { Observable, Subscription } from 'rxjs';
 import { Note } from 'src/app/models/note';
 import { AuthService } from 'src/app/services/auth-service';
 import { NotesService } from 'src/app/services/notes-service';
 import { Router } from '@angular/router';
-import { Timestamp } from '@angular/fire/firestore';
 import { ToastController } from '@ionic/angular';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+
 
 @Component({
   selector: 'app-home',
@@ -75,7 +75,7 @@ export class HomePage implements OnInit {
   }
 
   const note: Note = {
-    uid: '', // Firestore will generate this automatically
+    uid: '',
     title: this.newNote.title || '',
     content: this.newNote.content || '',
     tags: this.tagsInput ? this.tagsInput.split(',').map(tag => tag.trim()) : [],
@@ -83,13 +83,13 @@ export class HomePage implements OnInit {
     updatedAt: new Date(),
     color:this.newNote.color ,
     userId: this.currentUser.uid,
+    imageUrl: this.newNote.imageUrl || '',
   };
 
   try {
     await this.notesService.addNote(note);
     this.getNotesByUserId();
     console.log('Note ajoutée avec succès !');
-    // Reset form
     this.newNote = { title: '', content: '', tags: [] };
     this.tagsInput = '';
     this.showToast('Note ajoutée avec succès !', 'success');
@@ -139,4 +139,22 @@ export class HomePage implements OnInit {
     });
     await toast.present();
   }
+
+  async addImage() {
+    console.log('Adding image to note...');
+  try {
+    console.log('Opening camera to take photo...');
+    const image = await Camera.getPhoto({
+      quality: 80,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Photos,
+    });
+
+    this.newNote.imageUrl = image.dataUrl;
+  } catch (err) {
+    console.error('Camera error:', err);
+  }
+}
+
 }

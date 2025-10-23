@@ -9,4 +9,5 @@ export interface Note {
   color: any;
   updatedAt: Date |Timestamp;
   userId: string;
+  imageUrl?: string;
 }

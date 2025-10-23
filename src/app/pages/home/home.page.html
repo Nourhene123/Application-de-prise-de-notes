@@ -38,13 +38,15 @@
 
         <ion-card-content>
           {{ note.content }}
-          <!-- Trash icon appears only when note is selected -->
           <ion-icon
             *ngIf="isSelected(note)"
             name="trash-outline"
             class="delete-icon"
             (click)="deleteNote(note); $event.stopPropagation()"
           ></ion-icon>
+          <ion-img *ngIf="note.imageUrl" [src]="note.imageUrl" style="width:160px ;border-radius: 10px; margin-bottom: 10px;"></ion-img>
+
+
         </ion-card-content>
       </ion-card>
     }
@@ -101,6 +103,17 @@
                 <br>
                 <ion-input type="color" name="color" [(ngModel)]="newNote.color" required></ion-input>
               </ion-item>
+
+              <ion-item>
+                <ion-label>Image</ion-label>
+                <ion-button expand="block" (click)="addImage()">
+                  <ion-icon name="camera-outline"></ion-icon>
+                  <ion-label>Prendre une photo</ion-label>
+                </ion-button>
+              </ion-item>
+
+              <ion-img *ngIf="newNote.imageUrl" [src]="newNote.imageUrl" style="margin-top:10px; border-radius: 10px;"></ion-img>
+
 
               <ion-button
                 expand="block"
