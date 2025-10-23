@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth-service';
+import { NavigationService } from 'src/app/services/navigation.service';
 
 @Component({
   selector: 'app-register',
@@ -14,6 +16,8 @@ export class RegisterComponent {
   firstName: string = '';
   lastName: string = '';
   authService = inject(AuthService);
+  navigationService = inject(NavigationService);
+  toastController = inject(ToastController);
 
   constructor(private router: Router) {}
 
@@ -21,18 +25,32 @@ export class RegisterComponent {
     try {
       await this.authService.signUp(this.email, this.password, this.firstName, this.lastName);
       console.log('Inscription réussie !');
-      this.router.navigate(['/login']); // Redirige vers la page de connexion après inscription
+      console.log("Registration successful, redirecting based on role...");
+      this.showToast('Inscription réussie !', 'success');
+      await this.navigationService.redirectAfterLogin();
     } catch (error) {
+      this.showToast('Échec de l\'inscription. Veuillez réessayer.', 'danger');
       console.error('Échec de l\'inscription:', error);
       // Vous pouvez ajouter une alerte ou un message pour l'utilisateur ici
     }
   }
 
   goToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   isFormValid(): boolean {
     return this.email.trim() !== '' && this.password.trim() !== '' && this.firstName.trim() !== '' && this.lastName.trim() !== '';
+  }
+
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' | 'medium') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+      color,
+      icon: color === 'success' ? 'checkmark-circle-outline' : 'trash-outline',
+    });
+    await toast.present();
   }
 }
